@@ -1,12 +1,18 @@
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import PropTypes from 'prop-types';
 import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import Navigator from './components/Navigator';
 import Header from './components/Header';
-import UserList from './components/UserList';
+import { connect } from 'react-redux';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+
+
+const StationList = lazy(() => import('./components/StationList'));
+const UserList = lazy(() => import('./components/UserList'));
+
 
 let theme = createMuiTheme({
   typography: {
@@ -160,6 +166,7 @@ class App extends React.Component {
   };
 
   render() {
+    
     const { classes } = this.props;
 
     return (
@@ -182,7 +189,23 @@ class App extends React.Component {
           <div className={classes.appContent}>
             <Header onDrawerToggle={this.handleDrawerToggle} />
             <main className={classes.mainContent}>
-              <UserList />
+            <Router>
+                    <Suspense fallback={<div>Loading....</div>}>
+                        <div className="App">
+                            <div>
+                                <Switch>
+                                    <Route exact path="/">
+                                        <StationList />
+                                    </Route>
+                                    <Route exact path="/userlist">
+                                        <UserList />
+                                    </Route>
+                                    <Redirect to="/" />
+                                </Switch>
+                            </div>
+                        </div>
+                    </Suspense>
+                </Router>
             </main>
           </div>
         </div>
